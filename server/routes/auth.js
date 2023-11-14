@@ -4,21 +4,34 @@ const mysql = require('mysql2')
 const bcrypt = require("bcrypt");
 const {getToken} = require("../utils/helpers");
 
-const db = mysql.createConnection({
+const db = mysql.createPool({
     host: 'localhost',
     user: 'root',
     password: process.env.mySQLPassword,
     database: 'harmony_hub',
     port: 3306 // Default MySQL port is 3306
-  });
+  }).promise();
 
-db.connect((err) => {
-if (err) {
-    console.error('Error while connecting to database:', err);
-    return;
-}
+db.getConnection()
+.then(connection => {
 console.log('Connected to the database');
+// If you need to perform any queries, you can do them here using the 'connection' object
+// For example: connection.query('SELECT * FROM your_table');
+connection.release(); // Release the connection back to the pool when done
+})
+.catch(error => {
+console.error('Error connecting to the database:', error.message);
 });
+
+// db.query('SELECT * from demousers')
+//   .then(([rows, fields]) => {
+//     console.log('Connected to the database', rows);
+//   })
+//   .catch(error => {
+//     console.error('Error connecting to the database:', error.message);
+//   });
+
+
 
 
 // This POST route will help to register a user
@@ -76,16 +89,32 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
     // Step 1: Get email and password sent by user from req.body
     const {email, password} = req.body;
-
+    
     // Step 2: Check if a user with the given email exists. If not, the credentials are invalid.
-    const [rows] = await db.query('SELECT * FROM users WHERE Email = ?', [email]);
-    const user = rows[0];
+    async function getUser() {
+        try {
+          const [rows, fields] = await db.query('SELECT email, password FROM demousers WHERE email = ?', [email]);
+      
+          if (rows.length > 0) {
+            const user = rows[0];
+            console.log('User found:', user);
+            return user;
+          } else {
+            console.log('User not found');
+            return null;
+          }
+        } catch (error) {
+          console.error('Error querying the database:', error.message);
+          throw error;
+        }
+      }
 
+      let user = await getUser();
+    
     if (!user) {
         return res.status(403).json({ err: "Invalid credentials" });
     }
 
-    console.log(user);
 
     // Step 3: If the user exists, check if the password is correct. If not, the credentials are invalid.
     // This is a tricky step. Why? Because we have stored the original password in a hashed form, which we cannot use to get back the password.
@@ -98,10 +127,9 @@ router.post("/login", async (req, res) => {
     }
 
     // Step 4: If the credentials are correct, return a token to the user.
-    const token = await getToken(user.email, user);
-    const userToReturn = {...user.toJSON(), token};
-    delete userToReturn.password;
-    return res.status(200).json(userToReturn);
+
+    delete user.password;
+    return res.status(200).json(user.values);
 });
 
 module.exports = router;
