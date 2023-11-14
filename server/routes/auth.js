@@ -4,6 +4,9 @@ const mysql = require('mysql2')
 const bcrypt = require("bcrypt");
 const {getToken} = require("../utils/helpers");
 
+const dotenv=require('dotenv')
+dotenv.config();
+
 const db = mysql.createPool({
     host: 'localhost',
     user: 'root',
@@ -60,6 +63,7 @@ router.post("/register", async (req, res) => {
         lastname,
         username,
     };
+    
     // const [result] = db.query('INSERT INTO demousers SET ?', [newUserData]);
 
     // if (result.affectedRows === 1) {
