@@ -1,91 +1,88 @@
 const express = require("express");
 const router = express.Router();
 const passport = require("passport");
-const Song = require("../models/Song");
-const User = require("../models/User");
+const mysql = require("mysql");
+const util = require("util");
 
 const db = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: process.env.mySQLPassword,
-    database: 'harmony_hub',
-    port: 3306 // Default MySQL port is 3306
+  host: "localhost",
+  user: "root",
+  password: process.env.MYSQL_PASSWORD,
+  database: "harmony_hub",
+  port: 3306 // Default MySQL port is 3306
 });
 
-db.query = util.promisify(db.query);
-
-module.exports = db;
+const dbQuery = util.promisify(db.query).bind(db);
 
 router.post(
-    "/create",
-    passport.authenticate("jwt", {session: false}),
-    async (req, res) => {
-        // req.user getss the user because of passport.authenticate
-        const {name, thumbnail, track} = req.body;
-        if (!name || !thumbnail || !track) {
-            return res
-                .status(301)
-                .json({err: "Insufficient details to create song."});
-        }
-        const artist = req.user._id;
-        const songDetails = {name, thumbnail, track, artist};
-        const createdSong = await Song.create(songDetails);
-        return res.status(200).json(createdSong);
+  "/create",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const { name, thumbnail, track } = req.body;
+    if (!name || !thumbnail || !track) {
+      return res
+        .status(301)
+        .json({ err: "Insufficient details to create song." });
     }
+    const artist = req.user._id;
+    const songDetails = { name, thumbnail, track, artist };
+    const insertQuery = "INSERT INTO songs SET ?";
+    try {
+      const result = await dbQuery(insertQuery, songDetails);
+      const createdSong = { id: result.insertId, ...songDetails };
+      return res.status(200).json(createdSong);
+    } catch (error) {
+      return res.status(500).json({ err: "Error creating song" });
+    }
+  }
 );
 
-// Get route to get all songs I have published.
 router.get(
-    "/get/mysongs",
-    passport.authenticate("jwt", {session: false}),
-    async (req, res) => {
-        // We need to get all songs where artist id == currentUser._id
-        const query = `SELECT * FROM songs WHERE artist = ?`;
-        db.query(query,[req.user._id],(err, result) => {
-            if (err) {
-                return res.status(500).json({err: "Error retrieving songs"});
-            }
-            return res.status(200).json({data: result});
-        });
+  "/get/mysongs",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const artistId = req.user._id;
+    const query = "SELECT * FROM songs WHERE artist = ?";
+    try {
+      const result = await dbQuery(query, artistId);
+      return res.status(200).json({ data: result });
+    } catch (error) {
+      return res.status(500).json({ err: "Error retrieving songs" });
     }
+  }
 );
 
-// Get route to get all songs any artist has published
-// I will send the artist id and I want to see all songs that artist has published.
 router.get(
-    "/get/artist/:artistId",
-    passport.authenticate("jwt", {session: false}),
-    async (req, res) => {
-        const {artistId} = req.params;
-        // We can check if the artist does not exist
-        const query = `SELECT * FROM songs WHERE artist = ?`;
-        db.query(query,[artistId],(err, result) => {
-            if (err) {
-                return res.status(500).json({err: "Error retrieving songs"});
-            }
-            if (result.length === 0) {
-                return res.status(301).json({err: "Artist does not exist"});
-            }
-            return res.status(200).json({data: result});
-        });
+  "/get/artist/:artistId",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const { artistId } = req.params;
+    const query = "SELECT * FROM songs WHERE artist = ?";
+    try {
+      const result = await dbQuery(query, artistId);
+      if (result.length === 0) {
+        return res.status(301).json({ err: "Artist does not exist" });
+      }
+      return res.status(200).json({ data: result });
+    } catch (error) {
+      return res.status(500).json({ err: "Error retrieving songs" });
     }
+  }
 );
 
-// Get route to get a single song by name
 router.get(
-    "/get/songname/:songName",
-    passport.authenticate("jwt", {session: false}),
-    async (req, res) => {
-        const {songName} = req.params;
-
-        const query = `SELECT * FROM songs WHERE name = ?`;
-        db.query(query,[songName],(err, result) => {
-            if (err) {
-                return res.status(500).json({err: "Error retrieving songs"});
-            }
-            return res.status(200).json({data: result});
-        });
+  "/get/songname/:songName",
+  passport.authenticate("jwt", { session: false }),
+  async (req, res) => {
+    const { songName } = req.params;
+    const query = "SELECT * FROM songs WHERE name = ?";
+    try {
+      const result = await dbQuery(query, songName);
+      return res.status(200).json({ data: result });
+    } catch (error) {
+      return res.status(500).json({ err: "Error retrieving songs" });
     }
+  }
 );
 
 module.exports = router;
