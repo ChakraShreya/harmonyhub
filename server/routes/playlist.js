@@ -30,7 +30,7 @@ async function dbQuery(query, params) {
   }
 }
 
-
+// 4 functionalities
 // Create a new playlist
 router.post("/create", async (req, res) => {
   const { name, thumbnail, songs, owner_id } = req.body;
