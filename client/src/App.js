@@ -6,7 +6,7 @@ import LogoutComponent from "./routes/Logout";
 import SignupComponent from "./routes/Signup";
 import HomeComponent from "./routes/Home";
 import LoggedInHomeComponent from "./routes/LoggedInHome";
-// import UploadSong from "./routes/UploadSong";
+import UploadSong from "./routes/UploadSong";
 import MyMusic from "./routes/MyMusic";
 import SearchPage from "./routes/SearchPage";
 import Library from "./routes/Library";
@@ -32,7 +32,7 @@ function App() {
     return (
         <div className="w-screen h-screen font-poppins">
             <BrowserRouter>
-                {cookie.token ? (
+                {cookie.token===undefined ? (
                     // logged in routes
                     <songContext.Provider
                         value={{
@@ -51,10 +51,10 @@ function App() {
                                 path="/home"
                                 element={<LoggedInHomeComponent />}
                             />
-                            {/* <Route
+                            <Route
                                 path="/uploadSong"
                                 element={<UploadSong />}
-                            /> */}
+                            />
                             <Route path="/myMusic" element={<MyMusic />} />
                             <Route path="/search" element={<SearchPage />} />
                             <Route path="/library" element={<Library />} />
