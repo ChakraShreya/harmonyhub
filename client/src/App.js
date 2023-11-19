@@ -32,7 +32,7 @@ function App() {
     return (
         <div className="w-screen h-screen font-poppins">
             <BrowserRouter>
-                {cookie.token===undefined ? (
+                {cookie.token ? (
                     // logged in routes
                     <songContext.Provider
                         value={{
