@@ -11,7 +11,7 @@ dotenv.config();
 // This POST route will help to register a user
 router.post("/register", async (req, res) => {
     // Step 1: Get email and password sent by user from req.body
-    const {email, password, firstname, lastname, username} = req.body;
+    const {email, password, firstName: firstname, lastName: lastname, username} = req.body;
 
     // Step 2 : Does a user with this email already exist? If yes, we throw an error.
     

@@ -55,6 +55,16 @@ app.get('/', (req, res) => {
     })
 })
 
+app.post('/logout', (req, res) => {
+    // Perform any additional logout logic if needed
+  
+    // Clear the 'token' cookie
+    res.clearCookie('token');
+  
+    // Redirect to the login page or send a response indicating successful logout
+    res.redirect('/login');
+  });
+
 app.use("/auth", authRoutes);
 
 app.use("/song", songRoutes);

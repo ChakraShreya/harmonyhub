@@ -23,7 +23,8 @@ const SignupComponent = () => {
             );
             return;
         }
-        const data = {email, password, username, firstName, lastName};
+        const data = {email, password, firstName, lastName, username};
+        console.log(data);
         const response = await makeUnauthenticatedPOSTRequest(
             "/auth/register",
             data
