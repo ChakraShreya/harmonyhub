@@ -9,6 +9,7 @@ import {makeAuthenticatedPOSTRequest} from "../utils/serverHelpers";
 import {useNavigate} from "react-router-dom";
 
 const UploadSong = () => {
+    // console.log(window.cloudinary)
     const [name, setName] = useState("");
     const [thumbnail, setThumbnail] = useState("");
     const [playlistUrl, setPlaylistUrl] = useState("");
