@@ -1,1 +1,1 @@
-// exportUauthenticatedPOST = (url, data) => {
+export const backendUrl = "http://localhost:3000";

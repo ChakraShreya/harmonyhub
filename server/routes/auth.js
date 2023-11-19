@@ -4,44 +4,13 @@ const mysql = require('mysql2')
 const bcrypt = require("bcrypt");
 const {getToken} = require("../utils/helpers");
 
-const dotenv=require('dotenv')
+const dotenv=require('dotenv');
+const dbQuery = require("../models/DBconnect");
 dotenv.config();
-
-const db = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: process.env.mySQLPassword,
-    database: 'harmony_hub',
-    port: 3306 // Default MySQL port is 3306
-  }).promise();
-
-db.getConnection()
-.then(connection => {
-console.log('Connected to the database');
-// If you need to perform any queries, you can do them here using the 'connection' object
-// For example: connection.query('SELECT * FROM your_table');
-connection.release(); // Release the connection back to the pool when done
-})
-.catch(error => {
-console.error('Error connecting to the database:', error.message);
-});
-
-// db.query('SELECT * from demousers')
-//   .then(([rows, fields]) => {
-//     console.log('Connected to the database', rows);
-//   })
-//   .catch(error => {
-//     console.error('Error connecting to the database:', error.message);
-//   });
-
-
-
 
 // This POST route will help to register a user
 router.post("/register", async (req, res) => {
-    // This code is run when the /register api is called as a POST request
-
-    // My req.body will be of the format {email, password, firstName, lastName, username }
+    // Step 1: Get email and password sent by user from req.body
     const {email, password, firstname, lastname, username} = req.body;
 
     // Step 2 : Does a user with this email already exist? If yes, we throw an error.
@@ -63,31 +32,19 @@ router.post("/register", async (req, res) => {
         lastname,
         username,
     };
-    
-    // const [result] = db.query('INSERT INTO demousers SET ?', [newUserData]);
 
-    // if (result.affectedRows === 1) {
-    // console.log('User created successfully');
-    // } else {
-    // console.error('Error creating user');
-    // }
-    const result = db.query('INSERT INTO demousers SET ?', [newUserData]);
-    // function objectsToJSON(arr) {
-    //     return arr.map(obj => obj.toJSON ? obj.toJSON() : obj);
-    // }
-    
-    // const newUser = objectsToJSON(result.values);
-    // console.log(newUser)
-    
+    const result = await dbQuery('INSERT INTO demousers SET ?', newUserData);
 
     // // Step 4: We want to create the token to return to the user
-    // const token = await getToken(email, newUser);
+    const newUser = newUserData;
+    const token = await getToken(email, newUser);
+    console.log(token);
 
-    // // Step 5: Return the result to the user
-    // const userToReturn = {...newUser.toJSON(), token};
-    // console.log(userToReturn);
-    // delete userToReturn.password;
-    return res.status(200).json(result.values);
+    // Step 5: Return the result to the user
+    const userToReturn = {...newUser, token};
+    console.log(userToReturn);
+    delete userToReturn.password;
+    return res.status(200).json(userToReturn);
 });
 
 router.post("/login", async (req, res) => {
@@ -95,25 +52,7 @@ router.post("/login", async (req, res) => {
     const {email, password} = req.body;
     
     // Step 2: Check if a user with the given email exists. If not, the credentials are invalid.
-    async function getUser() {
-        try {
-          const [rows, fields] = await db.query('SELECT email, password FROM demousers WHERE email = ?', [email]);
-      
-          if (rows.length > 0) {
-            const user = rows[0];
-            console.log('User found:', user);
-            return user;
-          } else {
-            console.log('User not found');
-            return null;
-          }
-        } catch (error) {
-          console.error('Error querying the database:', error.message);
-          throw error;
-        }
-      }
-
-      let user = await getUser();
+    let user = await dbQuery('SELECT * FROM demousers WHERE email = ?', [email]);
     
     if (!user) {
         return res.status(403).json({ err: "Invalid credentials" });
@@ -131,9 +70,10 @@ router.post("/login", async (req, res) => {
     }
 
     // Step 4: If the credentials are correct, return a token to the user.
-
-    delete user.password;
-    return res.status(200).json(user.values);
+    const token = await getToken(user.email, user);
+    const userToReturn = {...user, token};
+    delete userToReturn.password;
+    return res.status(200).json(userToReturn);
 });
 
 module.exports = router;
