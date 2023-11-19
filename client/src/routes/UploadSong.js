@@ -7,6 +7,8 @@ import TextInput from "../components/shared/TextInput";
 import TextWithHover from "../components/shared/TextWithHover";
 import {makeAuthenticatedPOSTRequest} from "../utils/serverHelpers";
 import {useNavigate} from "react-router-dom";
+import { Link } from "react-router-dom";
+
 
 const UploadSong = () => {
     // console.log(window.cloudinary)
@@ -93,7 +95,7 @@ const UploadSong = () => {
                             <div className="h-1/2 border-r border-white"></div>
                         </div>
                         <div className="w-1/3 flex justify-around h-full items-center">
-                            <TextWithHover displayText={"Upload Song"} />
+                            <TextWithHover displayText={<Link to="/uploadsong"> Upload Song</Link>} />
                             <div className="bg-white w-10 h-10 flex items-center justify-center rounded-full font-semibold cursor-pointer">
                                 AC
                             </div>
