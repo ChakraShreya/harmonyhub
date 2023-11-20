@@ -33,7 +33,7 @@ router.post("/register", async (req, res) => {
         username,
     };
 
-    const result = await dbQuery('INSERT INTO demousers SET ?', newUserData);
+    const result = await dbQuery('INSERT INTO users SET ?', newUserData);
 
     // // Step 4: We want to create the token to return to the user
     const newUser = newUserData;
@@ -52,7 +52,7 @@ router.post("/login", async (req, res) => {
     const {email, password} = req.body;
     
     // Step 2: Check if a user with the given email exists. If not, the credentials are invalid.
-    let user = await dbQuery('SELECT * FROM demousers WHERE email = ?', [email]);
+    let user = await dbQuery('SELECT * FROM users WHERE email = ?', [email]);
     
     if (!user) {
         return res.status(403).json({ err: "Invalid credentials" });
