@@ -3,43 +3,30 @@ const router = express.Router();
 const passport = require("passport");
 const mysql = require("mysql2");
 const util = require("util");
-
-const db_name = "har";
+const dbQuery = require("../models/DBconnect");
 
 //put the authenticate using token passort back in each api call
 
-const db = mysql.createPool({
+const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: process.env.mySQLPassword,
-  database: db_name,
+  database: 'har',
   port: 3306 // Default MySQL port is 3306
-}).promise();
-
-db.getConnection().then(connection => {
-console.log('Connected to the database');
-connection.release();
-})
-.catch(error => {
-console.error('Error connecting to the database:', error.message);
 });
 
-async function dbQuery(query, params) {
-  try {
-    const [rows, fields] = await db.query(query, [params]);
+connection.connect();
 
-    if (rows.length > 0) {
-      const user = rows[0];
-      return user;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    console.error('Error querying the database:', error.message);
-    throw error;
-  }
-}
-  
+// const q = 'SELECT * FROM users';
+
+// connection.query(q, (error, results, fields) => {
+//   if (error) {
+//     console.error(error);
+//     throw error;
+//   }
+
+//   return results;
+// });
 
 router.post(
   "/create",
@@ -70,10 +57,25 @@ router.get(
   async (req, res) => {
     // const artistId = req.user._id;
     const artistId = "abc";
-    const query = "SELECT * FROM songs WHERE artist = ?";
-    try {
-      const result = await dbQuery(query, artistId);
-      return res.status(200).json({ data: result });
+    // const query = "SELECT * FROM songs WHERE artist = ?";
+    // try {
+    //   const result = await dbQuery(query, [artistId]);
+    //   console.log("result of the query: ", query, "is ", result);
+    //   return res.status(200).json({ data: [result] });
+    // } catch (error) {
+    //   return res.status(500).json({ err: "Error retrieving songs" });
+    // }
+    const q = `SELECT * FROM songs where artist = "${artistId}"`;
+    
+    try{
+      connection.query(q, (error, results, fields) => {
+        if (error) {
+          console.error(error);
+          throw error;
+        }
+        console.log("results of the query ", q, "is: ", results);
+        return res.status(200).json({ data: results });
+      });
     } catch (error) {
       return res.status(500).json({ err: "Error retrieving songs" });
     }

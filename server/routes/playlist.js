@@ -34,7 +34,8 @@ async function dbQuery(query, params) {
 // Create a new playlist
 router.post("/create", async (req, res) => {
   const { name, thumbnail, songs, owner_id } = req.body;
-  if (!name || !thumbnail || !songs || !owner_id) {
+  console.log(!owner_id);
+  if (!name || !thumbnail || !owner_id) {
     return res.status(400).json({ err: "Insufficient details to create playlist." });
   }
 

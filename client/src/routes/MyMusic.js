@@ -12,9 +12,22 @@ const MyMusic = () => {
                 "/song/get/mysongs"
             );
             setSongData(response.data);
+            console.log("response data: ", response.data)
+            console.log("song data: ", songData);
         };
-        getData();
+
+        const fetchDataWithDelay = async () => {
+            // Wait for 2 seconds
+            await new Promise(resolve => setTimeout(resolve, 2000));
+    
+            // Now fetch the data
+            getData();
+        };
+
+        fetchDataWithDelay();
+        console.log("song data: ", songData);
     }, []);
+
 
     return (
         <LoggedInContainer curActiveScreen="myMusic">
