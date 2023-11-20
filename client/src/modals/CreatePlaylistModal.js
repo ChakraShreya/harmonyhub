@@ -9,9 +9,11 @@ const CreatePlaylistModal = ({closeModal}) => {
     const createPlaylist = async () => {
         const response = await makeAuthenticatedPOSTRequest(
             "/playlist/create",
-            {name: playlistName, thumbnail: playlistThumbnail, songs: []}
+            {name: playlistName, thumbnail: playlistThumbnail, songs: "songdummy", owner_id: 12}
         );
-        if (response._id) {
+        console.log("response is: ", response);
+        if (response) {
+            alert("Playlist created successfully");
             closeModal();
         }
     };

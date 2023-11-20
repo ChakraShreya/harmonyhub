@@ -7,6 +7,7 @@ const JwtStrategy = require('passport-jwt').Strategy,
 const passport = require('passport')
 const authRoutes = require('./routes/auth')
 const songRoutes = require('./routes/song')
+const playlistRoutes = require('./routes/playlist')
 const dbQuery = require('./models/DBconnect')
 
 const app = express()
@@ -53,6 +54,8 @@ app.post('/logout', (req, res) => {
 app.use("/auth", authRoutes);
 
 app.use("/song", songRoutes);
+
+app.use("/playlist", playlistRoutes);
 
 app.listen(port, ()=>{
     console.log('listening to port', port)
