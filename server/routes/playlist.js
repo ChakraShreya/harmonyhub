@@ -66,6 +66,28 @@ router.get("/get/playlist/:playlistId", async (req, res) => {
   }
 });
 
+//Get all playlists made by me
+router.get(
+  "/get/myplaylists",
+  async (req, res) => {
+    const ownerId = 12;
+    const q = `SELECT * FROM playlist where owner_id = "${ownerId}"`;
+    
+    try{
+      connection.query(q, (error, results, fields) => {
+        if (error) {
+          console.error(error);
+          throw error;
+        }
+        console.log("results of the query ", q, "is: ", results);
+        return res.status(200).json({ data: results });
+      });
+    } catch (error) {
+      return res.status(500).json({ err: "Error retrieving playlist" });
+    }
+  }
+);
+
 // Get all playlists made by an artist
 router.get("/byArtist/:artistId", async (req, res) => {
     const { artistId } = req.params;

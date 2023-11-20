@@ -8,7 +8,7 @@ const Library = () => {
     useEffect(() => {
         const getData = async () => {
             const response = await makeAuthenticatedGETRequest(
-                "/playlist/get/me"
+                "/playlist/get/myplaylists"
             );
             setMyPlaylists(response.data);
         };
@@ -16,21 +16,14 @@ const Library = () => {
     }, []);
 
     return (
-        <LoggedInContainer curActiveScreen={"library"}>
-            <div className="text-white text-xl pt-8 font-semibold">
+        
+        <LoggedInContainer curActiveScreen="library">
+            <div className="text-white text-xl font-semibold pb-4 pl-2 pt-8">
                 My Playlists
             </div>
-            <div className="py-5 grid gap-5 grid-cols-5">
+            <div className="space-y-3 overflow-auto">
                 {myPlaylists.map((item) => {
-                    return (
-                        <Card
-                            key={JSON.stringify(item)}
-                            title={item.name}
-                            description=""
-                            imgUrl={item.thumbnail}
-                            playlistId={item._id}
-                        />
-                    );
+                    return <Card info={item} title={item.name}imgUrl={item.thumbnail}/>;
                 })}
             </div>
         </LoggedInContainer>
