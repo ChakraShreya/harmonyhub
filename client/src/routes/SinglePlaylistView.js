@@ -13,21 +13,35 @@ const SinglePlaylistView = () => {
             const response = await makeAuthenticatedGETRequest(
                 "/playlist/get/playlist/" + playlistId
             );
-            setPlaylistDetails(response);
-            console.log(response);
+            console.log("response is: ", response.data[0])
+            setPlaylistDetails(response.data[0]);
         };
-        getData();
+        
+        const fetchDataWithDelay = async () => {
+            // Wait for 2 seconds
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Now fetch the data
+            getData();
+        };
+        
+        fetchDataWithDelay();
+        console.log("playlist details id: ", playlistDetails.id);
     }, []);
+    const arr = [playlistDetails.songs];
+    // const arr = []
 
     return (
         <LoggedInContainer curActiveScreen={"library"}>
-            {playlistDetails._id && (
+            {playlistDetails.id && (
                 <div>
                     <div className="text-white text-xl pt-8 font-semibold">
                         {playlistDetails.name}
                     </div>
                     <div className="pt-10 space-y-3">
-                        {playlistDetails.songs.map((item) => {
+                        
+                        {
+                        arr.map((item) => {
                             return (
                                 <SingleSongCard
                                     info={item}

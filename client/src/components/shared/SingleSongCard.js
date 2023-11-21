@@ -23,7 +23,7 @@ const SingleSongCard = ({info, playSound}) => {
                         {info.name}
                     </div>
                     <div className="text-xs text-gray-400 cursor-pointer hover:underline">
-                        {info.artist.firstName + " " + info.artist.lastName}
+                        {/* {info.artist.firstName + " " + info.artist.lastName} */}
                     </div>
                 </div>
                 <div className="w-1/6 flex items-center justify-center text-gray-400 text-sm">

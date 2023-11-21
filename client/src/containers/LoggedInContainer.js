@@ -204,9 +204,9 @@ const LoggedInContainer = ({children, curActiveScreen}) => {
                                 {currentSong.name}
                             </div>
                             <div className="text-xs text-gray-500 hover:underline cursor-pointer">
-                                {currentSong.artist.firstName +
+                                {/* {currentSong.artist.firstName +
                                     " " +
-                                    currentSong.artist.lastName}
+                                    currentSong.artist.lastName} */}
                             </div>
                         </div>
                     </div>
