@@ -114,4 +114,55 @@ router.get(
   }
 );
 
+router.post(
+  "/like",
+  async (req, res) => {
+    const { songId, songName } = req.body;
+    const query = "update likedSongs set liked = 1 where name = ?";
+    try {
+      const result = await dbQuery(query, songName);
+      return res.status(200).json({ data: result });
+    } catch (error) {
+      return res.status(500).json({ err: "Error retrieving songs" });
+    }
+  }
+)
+
+router.get(
+  "/get/likedSongs",
+  async (req, res) => {
+    console.log("here")
+    const q = "SELECT * FROM songs WHERE name IN (SELECT name FROM likedSongs WHERE liked = 1)";
+    try{
+      connection.query(q, (error, results, fields) => {
+        if (error) {
+          console.error(error);
+          throw error;
+        }
+        console.log("results of the query ", q, "is: ", results);
+        return res.status(200).json({ data: results });
+      });
+    } catch (error) {
+      return res.status(500).json({ err: "Error retrieving songs" });
+    }
+  }
+)
+
+router.get(
+  "/delete/:songName",
+  async (req, res) => {
+    const {songName} = req.params;
+    console.log("console output: ", req.params)
+    // const query = "delete from songs where name = ?";
+    const query = `delete from songs where name = "${songName}"`;
+    console.log("query is: ", query);
+    try {
+      const result = await dbQuery(query, songName);
+      return res.status(200).json({ data: result });
+    } catch (error) {
+      return res.status(500).json({ err: "Error retrieving songs" });
+    }
+  }
+)
+
 module.exports = router;

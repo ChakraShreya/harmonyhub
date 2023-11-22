@@ -7,7 +7,7 @@ import TextWithHover from "../components/shared/TextWithHover";
 import songContext from "../contexts/songContext";
 import CreatePlaylistModal from "../modals/CreatePlaylistModal";
 import AddToPlaylistModal from "../modals/AddToPlaylistModal";
-import {makeAuthenticatedPOSTRequest} from "../utils/serverHelpers";
+import {makeAuthenticatedGETRequest, makeAuthenticatedPOSTRequest} from "../utils/serverHelpers";
 import {Link} from "react-router-dom";
 
 const LoggedInContainer = ({children, curActiveScreen}) => {
@@ -86,6 +86,11 @@ const LoggedInContainer = ({children, curActiveScreen}) => {
             setIsPaused(true);
         }
     };
+    
+    function handleLikedClick() {
+        makeAuthenticatedPOSTRequest("/song/like", 
+        {songId: currentSong.id, songName: currentSong.name})
+    }
 
     return (
         <div className="h-full w-full bg-app-black">
@@ -155,6 +160,7 @@ const LoggedInContainer = ({children, curActiveScreen}) => {
                             <IconText
                                 iconName={"mdi:cards-heart"}
                                 displayText={"Liked Songs"}
+                                targetLink={"/likedSongs"}
                             />
                         </div>
                     </div>
@@ -180,7 +186,7 @@ const LoggedInContainer = ({children, curActiveScreen}) => {
                             <div className="w-1/3 flex justify-around h-full items-center">
                                 <TextWithHover displayText={<Link to="/uploadsong"> Upload Song </Link>} />
                                 <div className="bg-white w-10 h-10 flex items-center justify-center rounded-full font-semibold cursor-pointer">
-                                    AC
+                                    MN
                                 </div>
                             </div>
                         </div>
@@ -259,6 +265,7 @@ const LoggedInContainer = ({children, curActiveScreen}) => {
                             icon="ph:heart-bold"
                             fontSize={25}
                             className="cursor-pointer text-gray-500 hover:text-white"
+                            onClick={handleLikedClick}
                         />
                     </div>
                 </div>

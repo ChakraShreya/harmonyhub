@@ -1,5 +1,11 @@
 import {useContext} from "react";
 import songContext from "../../contexts/songContext";
+import { makeAuthenticatedGETRequest, makeAuthenticatedPOSTRequest } from "../../utils/serverHelpers";
+
+const handleDelete = async function(name) {
+    const req = `/song/delete/${name}`;
+    const response = makeAuthenticatedGETRequest(req);
+}
 
 const SingleSongCard = ({info, playSound}) => {
     const {currentSong, setCurrentSong} = useContext(songContext);
@@ -27,7 +33,7 @@ const SingleSongCard = ({info, playSound}) => {
                     </div>
                 </div>
                 <div className="w-1/6 flex items-center justify-center text-gray-400 text-sm">
-                    <div>3:44</div>
+                    <button onClick={() => handleDelete(info.name)} color="red">delete</button>
                 </div>
             </div>
         </div>

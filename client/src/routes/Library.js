@@ -12,7 +12,17 @@ const Library = () => {
             );
             setMyPlaylists(response.data);
         };
-        getData();
+
+        //write a time delay function
+        async function fetchDataWithDelay() {
+            // Wait for 2 seconds
+            await new Promise(resolve => setTimeout(resolve, 2000));
+
+            // Now fetch the data
+            getData();
+        }
+        fetchDataWithDelay();
+        console.log("my playlists: ", myPlaylists);
     }, []);
 
     return (
@@ -30,20 +40,20 @@ const Library = () => {
     );
 };
 
-const Card = ({title, description, imgUrl, playlistId}) => {
+const Card = ({info, title, imgUrl}) => {
     const navigate = useNavigate();
     return (
         <div
             className="bg-black bg-opacity-40 w-full p-4 rounded-lg cursor-pointer"
             onClick={() => {
-                navigate("/playlist/" + playlistId);
+                navigate("/playlist/" + info.id);
             }}
         >
             <div className="pb-4 pt-2">
                 <img className="w-full rounded-md" src={imgUrl} alt="label" />
             </div>
             <div className="text-white font-semibold py-3">{title}</div>
-            <div className="text-gray-500 text-sm">{description}</div>
+            {/* <div className="text-gray-500 text-sm">{description}</div> */}
         </div>
     );
 };

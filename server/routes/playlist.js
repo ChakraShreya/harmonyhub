@@ -14,6 +14,16 @@ const db = mysql.createPool({
   port: 3306 // Default MySQL port is 3306
 }).promise();
 
+const connection = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: process.env.mySQLPassword,
+  database: 'har',
+  port: 3306 // Default MySQL port is 3306
+});
+
+connection.connect();
+
 // Function to handle database queries
 async function dbQuery(query, params) {
   try {
@@ -71,7 +81,8 @@ router.get(
   "/get/myplaylists",
   async (req, res) => {
     const ownerId = 12;
-    const q = `SELECT * FROM playlist where owner_id = "${ownerId}"`;
+    // const q = `SELECT * FROM playlist where owner_id = "${ownerId}"`;
+    const q = 'SELECT * FROM playlist';
     
     try{
       connection.query(q, (error, results, fields) => {

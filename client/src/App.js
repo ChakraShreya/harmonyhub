@@ -13,6 +13,7 @@ import Library from "./routes/Library";
 import SinglePlaylistView from "./routes/SinglePlaylistView";
 import {useCookies} from "react-cookie";
 import songContext from "./contexts/songContext";
+import LikedSongs from "./routes/Liked";
 
 function App() {
     const [currentSong, setCurrentSong] = useState(null);
@@ -62,6 +63,7 @@ function App() {
                                 path="/playlist/:playlistId"
                                 element={<SinglePlaylistView />}
                             />
+                            <Route path="/likedSongs" element={<LikedSongs />} />
                             <Route path="*" element={<Navigate to="/home" />} />
                         </Routes>
                     </songContext.Provider>
